@@ -7,3 +7,5 @@ tensorflow
 openpyxl
 matplotlib
 seaborn
+requests
+joblib
