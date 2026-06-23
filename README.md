@@ -144,3 +144,12 @@ Example scheduler flow:
 - If real column names differ, update them in `src/config.py`.
 - If some features are unavailable in a zone, the code keeps only columns that exist.
 - LSTM is implemented in a safe baseline form and can be disabled from config if TensorFlow setup is heavy on the first run.
+
+
+Multi-Region Load Forecasting
+- ดึงข้อมูลไฟฟ้าจาก server ผ่าน URL
+- รันพยากรณ์โหลดไฟฟ้า 5 ภาค
+- ใช้ XGBoost, LightGBM, LSTM
+- รวมผลด้วย Ensemble
+- วัดผลด้วย MAPE, MAE, RMSE, BIAS
+- Export ผลลัพธ์เป็น CSV รวมทุกภาค

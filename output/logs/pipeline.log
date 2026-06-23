@@ -42,3 +42,25 @@
 2026-06-23 23:09:31,766 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
 2026-06-23 23:11:59,463 | INFO | Finished zone: SAC
 2026-06-23 23:11:59,558 | INFO | Pipeline finished successfully
+2026-06-23 23:24:50,329 | INFO | Pipeline started
+2026-06-23 23:24:50,330 | INFO | Starting zone: CAC
+2026-06-23 23:25:04,019 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-23 23:25:04,612 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-23 23:27:06,539 | INFO | Finished zone: CAC
+2026-06-23 23:27:06,548 | INFO | Starting zone: MAC
+2026-06-23 23:27:19,857 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-23 23:27:20,369 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-23 23:28:48,943 | INFO | Finished zone: MAC
+2026-06-23 23:28:48,945 | INFO | Starting zone: NAC
+2026-06-23 23:29:00,626 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-23 23:29:01,187 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-23 23:30:44,321 | INFO | Finished zone: NAC
+2026-06-23 23:30:44,327 | INFO | Starting zone: NEC
+2026-06-23 23:30:57,443 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-23 23:30:57,917 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-23 23:33:02,226 | INFO | Finished zone: NEC
+2026-06-23 23:33:02,232 | INFO | Starting zone: SAC
+2026-06-23 23:33:17,385 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-23 23:33:17,852 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-23 23:34:29,289 | INFO | Finished zone: SAC
+2026-06-23 23:34:29,353 | INFO | Pipeline finished successfully
