@@ -23,6 +23,7 @@ daily run they represent different forecast horizons by construction
 """
 
 from datetime import date, timedelta
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -35,7 +36,7 @@ def _is_realized(actual: pd.Series) -> pd.Series:
     return actual.abs() >= ZERO_ACTUAL_THRESHOLD
 
 
-def _load_history(history_path) -> pd.DataFrame | None:
+def _load_history(history_path) -> Optional[pd.DataFrame]:
     if not history_path.exists():
         return None
     history_df = pd.read_csv(history_path)

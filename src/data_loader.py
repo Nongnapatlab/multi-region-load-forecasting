@@ -8,7 +8,18 @@ from config import DATE_COL
 
 def ensure_datetime(df: pd.DataFrame) -> pd.DataFrame:
     if DATE_COL in df.columns:
-        df[DATE_COL] = pd.to_datetime(df[DATE_COL], errors="coerce")
+        # Source CSVs use DD/MM/YYYY HH:MM:SS. Parsing without an explicit
+        # format lets pandas guess MM/DD/YYYY instead, which silently turns
+        # most rows into NaT (e.g. "22/06/2026" has no valid month-22).
+        # NaT.year is nan (a float), which later crashes the holidays
+        # library deep inside its internal `range(start_year, year)` call
+        # with "TypeError: 'float' object cannot be interpreted as an
+        # integer" — so this isn't just a data-quality nicety, it's load-bearing.
+        parsed = pd.to_datetime(df[DATE_COL], format="%d/%m/%Y %H:%M:%S", errors="coerce")
+        if parsed.isna().all() and len(df) > 0:
+            # Fallback for if the upstream format ever changes shape.
+            parsed = pd.to_datetime(df[DATE_COL], dayfirst=True, errors="coerce")
+        df[DATE_COL] = parsed
         df = df.sort_values(DATE_COL).reset_index(drop=True)
     return df
 

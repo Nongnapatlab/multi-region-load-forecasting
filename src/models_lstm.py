@@ -3,21 +3,39 @@
 Encapsulates:
 - MinMaxScaler fitting for both X and y
 - Sequence construction (sliding window of length sequence_length)
-- NaN-padding fix: the first (sequence_length - 1) rows that would otherwise
-  be NaN are filled with the earliest available prediction instead of NaN.
-  This prevents ensemble averaging from collapsing to NaN for those rows.
+- Deterministic seeding (numpy/random/tensorflow) so repeated runs on the
+  same data produce the same predictions.
+- Warm-up rows (the first sequence_length - 1 rows of any predict() call,
+  which don't have enough history to form a sequence) are left as NaN.
+  ensemble.py's weighted_average_ensemble renormalizes weights per-row, so
+  these rows simply fall back to the other models instead of being
+  dragged toward a copy-pasted constant.
 - None-model guard: if training data is too short to build even one sequence
   the model is a no-op and predict() returns np.nan everywhere.
 """
 
+import os
+import random
+
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.models import Sequential
 
-from config import LSTM_PARAMS
+from config import LSTM_PARAMS, RANDOM_STATE
+
+
+def _set_deterministic_seed(seed: int = RANDOM_STATE) -> None:
+    """Fix all relevant RNGs so LSTM training is reproducible across runs.
+    Without this, weights initialize differently every run and predictions
+    (and therefore MAPE) will vary run-to-run even with identical data."""
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
 
 
 class LSTMModel:
@@ -55,6 +73,8 @@ class LSTMModel:
     # ------------------------------------------------------------------
 
     def fit(self, X_train: pd.DataFrame, y_train: pd.Series) -> "LSTMModel":
+        _set_deterministic_seed()
+
         X_scaled = self._x_scaler.fit_transform(X_train)
         y_scaled = self._y_scaler.fit_transform(
             np.array(y_train).reshape(-1, 1)
@@ -93,9 +113,23 @@ class LSTMModel:
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """Return predictions for every row in X.
 
-        Fix: instead of NaN-padding the first (sequence_length - 1) rows,
-        we forward-fill with the first real prediction so that ensemble
-        averaging works across all rows without collapsing to NaN.
+        The first (sequence_length - 1) rows have no real LSTM prediction
+        (there isn't enough history yet to form a sequence) — they are left
+        as NaN rather than forward-filled with the first real prediction.
+
+        Forward-filling looks convenient (no NaNs to handle downstream) but
+        is misleading: with a short test set (e.g. 288 rows, sequence_length
+        24), forward-fill can mean *every single realized row* in a day
+        gets the same constant value repeated, which is not really "the
+        LSTM's prediction" for those timestamps — it's one prediction
+        copy-pasted. That constant then drags the ensemble toward a flat
+        line regardless of how much actual demand actually varied that day.
+
+        Leaving these as NaN and letting weighted_average_ensemble
+        renormalize weights per-row (see ensemble.py) means rows without
+        enough LSTM history simply fall back to XGBoost+LightGBM only,
+        which is the honest answer when LSTM genuinely has nothing to
+        contribute yet.
         """
         n = len(X)
         if self._model is None:
@@ -113,10 +147,8 @@ class LSTMModel:
         ).flatten()
 
         # Align: preds[0] corresponds to row index (sequence_length - 1).
-        # Forward-fill the warm-up rows with the first real prediction.
-        result = np.empty(n)
+        # Rows before that have no real prediction — leave them as NaN.
+        result = np.full(n, np.nan)
         seq_len = self._sequence_length
         result[seq_len - 1:] = preds
-        if seq_len > 1:
-            result[: seq_len - 1] = preds[0]  # forward-fill warm-up rows
         return result

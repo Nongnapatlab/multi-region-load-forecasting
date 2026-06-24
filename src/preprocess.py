@@ -49,6 +49,17 @@ def prepare_features(train_df: pd.DataFrame, test_df: pd.DataFrame) -> tuple[pd.
 
     common_feature_cols = [c for c in feature_cols if c in test_df.columns]
 
+    # Drop columns that are entirely NaN in either split *before* fitting the
+    # imputer. SimpleImputer silently drops such columns from its output,
+    # which would otherwise desync common_feature_cols from the imputed
+    # array's actual column count.
+    all_nan_cols = {
+        c for c in common_feature_cols
+        if train_df[c].isna().all() or test_df[c].isna().all()
+    }
+    if all_nan_cols:
+        common_feature_cols = [c for c in common_feature_cols if c not in all_nan_cols]
+
     X_train = train_df[common_feature_cols].copy()
     X_test = test_df[common_feature_cols].copy()
     y_train = train_df[TARGET_COL].copy()

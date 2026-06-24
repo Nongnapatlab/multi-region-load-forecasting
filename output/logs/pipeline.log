@@ -108,3 +108,28 @@
 2026-06-24 00:49:59,396 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
 2026-06-24 00:51:31,668 | INFO | Finished zone: SAC
 2026-06-24 00:51:31,724 | INFO | Pipeline finished successfully
+2026-06-24 14:24:41,343 | INFO | Pipeline started  (run_timestamp=20260624_142441)
+2026-06-24 14:24:41,343 | INFO | Starting zone: CAC
+2026-06-24 14:25:21,476 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-24 14:25:22,218 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-24 14:25:57,074 | INFO | Finished zone: CAC
+2026-06-24 14:25:57,076 | INFO | Starting zone: MAC
+2026-06-24 14:26:32,947 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-24 14:26:33,631 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-24 14:27:14,937 | INFO | Finished zone: MAC
+2026-06-24 14:27:14,940 | INFO | Starting zone: NAC
+2026-06-24 14:27:43,029 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-24 14:27:43,626 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-24 14:28:25,182 | INFO | Finished zone: NAC
+2026-06-24 14:28:25,186 | INFO | Starting zone: NEC
+2026-06-24 14:29:20,241 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-24 14:29:20,905 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-24 14:31:02,346 | INFO | Finished zone: NEC
+2026-06-24 14:31:02,356 | INFO | Starting zone: SAC
+2026-06-24 14:31:30,591 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-24 14:31:31,207 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-24 14:32:07,292 | INFO | Finished zone: SAC
+2026-06-24 14:32:07,405 | INFO | CSV exports complete
+2026-06-24 14:32:07,426 | INFO | Decision dashboard built (5 zones)
+2026-06-24 14:32:08,980 | INFO | Excel report written → /Users/noeiibibi/Documents/multi-region-load-forecasting/output/load_forecast_report.xlsx
+2026-06-24 14:32:08,980 | INFO | Pipeline finished successfully (run_timestamp=20260624_142441)

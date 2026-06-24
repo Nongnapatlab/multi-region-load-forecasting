@@ -35,10 +35,11 @@ ENSEMBLE_WEIGHTS_NO_LSTM = {
 }
 
 MODEL_PRED_COLS = [
-    ("XGBoost",  "pred_xgb"),
+    ("XGBoost", "pred_xgb"),
     ("LightGBM", "pred_lgbm"),
-    ("LSTM",     "pred_lstm"),
-    ("Ensemble", "pred_ensemble"),
+    ("LSTM", "pred_lstm"),
+    ("Ensemble_XGB_LGBM_LSTM", "pred_ensemble"),
+    ("Ensemble_XGB_LGBM", "pred_ensemble_xgb_lgbm"),
 ]
 
 
@@ -82,6 +83,18 @@ def run_zone_pipeline(
     test_result["pred_xgb"]  = xgb_model.predict(X_test)
     test_result["pred_lgbm"] = lgbm_model.predict(X_test)
 
+    # Ensemble of XGBoost + LightGBM only, computed regardless of whether
+    # LSTM is used. This gives a stable baseline to compare the full
+    # 3-model ensemble against — useful since LSTM's scoreable rows are
+    # often very few (sequence warm-up consumes most of a short test set),
+    # so it's hard to tell from pred_ensemble alone whether LSTM is helping
+    # or hurting.
+    test_result = weighted_average_ensemble(
+        test_result,
+        weights=ENSEMBLE_WEIGHTS_NO_LSTM,
+        output_col="pred_ensemble_xgb_lgbm",
+    )
+
     if USE_LSTM:
         lstm_model = LSTMModel().fit(X_train, y_train)
         test_result["pred_lstm"] = lstm_model.predict(X_test)
@@ -117,18 +130,33 @@ def run_zone_pipeline(
 
 
 def build_all_zone_summary(metrics_df: pd.DataFrame) -> pd.DataFrame:
-    """Append an 'ALL' row that averages each model's metrics across zones."""
+    """Append an 'ALL' row per model, weighted by n_rows_scored so a zone
+    that only had 1 scoreable row (e.g. LSTM during its sequence warm-up)
+    doesn't count the same as a zone with 24 scoreable rows."""
     rows = []
     for model_name in metrics_df["model"].dropna().unique():
         subset = metrics_df[metrics_df["model"] == model_name]
-        rows.append({
-            "zone":  "ALL",
+        weights = subset["n_rows_scored"].fillna(0) if "n_rows_scored" in subset.columns else pd.Series([1] * len(subset))
+        total_weight = weights.sum()
+
+        def weighted_mean(col):
+            if total_weight == 0:
+                return float("nan")
+            return (subset[col] * weights).sum() / total_weight
+
+        row = {
+            "zone": "ALL",
             "model": model_name,
-            "MAPE":  subset["MAPE"].mean(),
-            "MAE":   subset["MAE"].mean(),
-            "RMSE":  subset["RMSE"].mean(),
-            "BIAS":  subset["BIAS"].mean(),
-        })
+            "MAPE": weighted_mean("MAPE"),
+            "MAE": weighted_mean("MAE"),
+            "RMSE": weighted_mean("RMSE"),
+            "BIAS": weighted_mean("BIAS"),
+        }
+        if "n_rows_scored" in subset.columns:
+            row["n_rows_total"] = subset["n_rows_total"].sum()
+            row["n_rows_scored"] = subset["n_rows_scored"].sum()
+            row["n_rows_excluded_zero_actual"] = subset["n_rows_excluded_zero_actual"].sum()
+        rows.append(row)
     return pd.DataFrame(rows)
 
 
@@ -136,10 +164,11 @@ def build_daily_mape(predictions_df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for zone, zone_df in predictions_df.groupby("zone"):
         for model_name, ape_col in [
-            ("XGBoost",  "ape_pred_xgb"),
+            ("XGBoost", "ape_pred_xgb"),
             ("LightGBM", "ape_pred_lgbm"),
-            ("LSTM",     "ape_pred_lstm"),
-            ("Ensemble", "ape_pred_ensemble"),
+            ("LSTM", "ape_pred_lstm"),
+            ("Ensemble_XGB_LGBM_LSTM", "ape_pred_ensemble"),
+            ("Ensemble_XGB_LGBM", "ape_pred_ensemble_xgb_lgbm"),
         ]:
             if DATE_COL not in zone_df.columns or ape_col not in zone_df.columns:
                 continue
