@@ -1,29 +1,48 @@
+"""Entry point for the multi-region load forecasting pipeline.
+
+Orchestrates:
+1. Per-zone training & evaluation  (pipeline.py)
+2. CSV exports                      (export_results.py)
+3. Decision dashboard               (dashboard.py)
+4. Excel report                     (report_excel.py)
+"""
+
 import logging
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
 from config import (
-    DATE_COL,
-    TARGET_COL,
     CACHE_DIR,
     DIRECTORIES,
     LOGS_DIR,
     METRICS_DIR,
+    OUTPUT_DIR,
     PREDICTIONS_DIR,
-    USE_LSTM,
     ZONES,
 )
-from data_loader import load_zone_data
-from diagnostics import build_diagnostics
-from ensemble import simple_average_ensemble
-from export_results import export_csv
-from feature_engineering import build_features
-from metrics import add_absolute_percentage_error, evaluate_predictions
-from preprocess import prepare_features
-from train_lgbm import train_lgbm_model
-from train_lstm import predict_lstm, train_lstm_model
-from train_xgb import train_xgb_model
+from dashboard import build_decision_dashboard
+from export_results import (
+    append_prediction_history,
+    export_csv,
+    export_future_predictions,
+    export_latest_available_predictions,
+    export_snapshot,
+    export_today_predictions,
+)
+from pipeline import (
+    build_all_zone_summary,
+    build_daily_mape,
+    run_zone_pipeline,
+)
+from report_excel import build_excel_report
+
+
+# ── Paths that only main.py needs to know about ───────────────────────────────
+SNAPSHOTS_DIR   = OUTPUT_DIR / "snapshots"
+HISTORY_PATH    = OUTPUT_DIR / "predictions" / "prediction_history.csv"
+EXCEL_REPORT    = OUTPUT_DIR / "load_forecast_report.xlsx"
 
 
 def setup_logging() -> None:
@@ -41,125 +60,87 @@ def setup_logging() -> None:
 def ensure_directories() -> None:
     for directory in DIRECTORIES:
         Path(directory).mkdir(parents=True, exist_ok=True)
-
-
-def run_zone_pipeline(zone_name: str, zone_config: dict):
-    logging.info("Starting zone: %s", zone_name)
-    train_df, test_df = load_zone_data(zone_name, zone_config, CACHE_DIR)
-
-    train_df = build_features(train_df)
-    test_df = build_features(test_df)
-
-    X_train, X_test, y_train, y_test, feature_cols = prepare_features(train_df, test_df)
-
-    xgb_model = train_xgb_model(X_train, y_train)
-    lgbm_model = train_lgbm_model(X_train, y_train)
-
-    test_result = test_df[[DATE_COL, TARGET_COL, "zone"]].copy()
-    test_result = test_result.rename(columns={TARGET_COL: "actual"})
-
-    test_result["pred_xgb"] = xgb_model.predict(X_test)
-    test_result["pred_lgbm"] = lgbm_model.predict(X_test)
-
-    if USE_LSTM:
-        lstm_model, x_scaler, y_scaler = train_lstm_model(X_train, y_train)
-        test_result["pred_lstm"] = predict_lstm(lstm_model, x_scaler, y_scaler, X_test)
-    else:
-        test_result["pred_lstm"] = pd.NA
-
-    test_result = simple_average_ensemble(
-        test_result,
-        prediction_cols=["pred_xgb", "pred_lgbm", "pred_lstm"],
-        output_col="pred_ensemble",
-    )
-
-    for pred_col in ["pred_xgb", "pred_lgbm", "pred_lstm", "pred_ensemble"]:
-        test_result = add_absolute_percentage_error(test_result, "actual", pred_col, f"ape_{pred_col}")
-
-    metrics_rows = []
-    for model_name, pred_col in [
-        ("XGBoost", "pred_xgb"),
-        ("LightGBM", "pred_lgbm"),
-        ("LSTM", "pred_lstm"),
-        ("Ensemble", "pred_ensemble"),
-    ]:
-        metric_values = evaluate_predictions(test_result["actual"], test_result[pred_col])
-        metrics_rows.append({"zone": zone_name, "model": model_name, **metric_values})
-
-    metrics_df = pd.DataFrame(metrics_rows)
-    diagnostics_df = build_diagnostics(zone_name, train_df, test_df, feature_cols)
-
-    logging.info("Finished zone: %s", zone_name)
-    return test_result, metrics_df, diagnostics_df
-
-
-def build_all_zone_summary(metrics_df: pd.DataFrame) -> pd.DataFrame:
-    rows = []
-    for model_name in metrics_df["model"].dropna().unique():
-        subset = metrics_df[metrics_df["model"] == model_name]
-        rows.append(
-            {
-                "zone": "ALL",
-                "model": model_name,
-                "MAPE": subset["MAPE"].mean(),
-                "MAE": subset["MAE"].mean(),
-                "RMSE": subset["RMSE"].mean(),
-                "BIAS": subset["BIAS"].mean(),
-            }
-        )
-    return pd.DataFrame(rows)
-
-
-def build_daily_mape(predictions_df: pd.DataFrame) -> pd.DataFrame:
-    rows = []
-    for zone, zone_df in predictions_df.groupby("zone"):
-        for model_name, ape_col in [
-            ("XGBoost", "ape_pred_xgb"),
-            ("LightGBM", "ape_pred_lgbm"),
-            ("LSTM", "ape_pred_lstm"),
-            ("Ensemble", "ape_pred_ensemble"),
-        ]:
-            if DATE_COL in zone_df.columns:
-                grouped = zone_df.groupby(DATE_COL, dropna=False)[ape_col].mean().reset_index()
-                grouped["zone"] = zone
-                grouped["model"] = model_name
-                grouped = grouped.rename(columns={ape_col: "daily_mape"})
-                rows.append(grouped)
-    if not rows:
-        return pd.DataFrame()
-    return pd.concat(rows, ignore_index=True)
+    SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def main() -> None:
     ensure_directories()
     setup_logging()
-    logging.info("Pipeline started")
 
-    all_predictions = []
-    all_metrics = []
-    all_diagnostics = []
+    run_ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_date = datetime.now().date()
+    logging.info("Pipeline started  (run_timestamp=%s)", run_ts)
+
+    # ── 1. Per-zone pipeline ──────────────────────────────────────────────────
+    all_predictions: list[pd.DataFrame] = []
+    all_metrics:     list[pd.DataFrame] = []
+    all_diagnostics: list[pd.DataFrame] = []
 
     for zone_name, zone_config in ZONES.items():
-        zone_predictions, zone_metrics, zone_diagnostics = run_zone_pipeline(zone_name, zone_config)
+        zone_predictions, zone_metrics, zone_diagnostics = run_zone_pipeline(
+            zone_name, zone_config, CACHE_DIR
+        )
         all_predictions.append(zone_predictions)
         all_metrics.append(zone_metrics)
         all_diagnostics.append(zone_diagnostics)
 
-    predictions_df = pd.concat(all_predictions, ignore_index=True)
-    metrics_df = pd.concat(all_metrics, ignore_index=True)
-    diagnostics_df = pd.concat(all_diagnostics, ignore_index=True)
+    predictions_df  = pd.concat(all_predictions,  ignore_index=True)
+    metrics_df      = pd.concat(all_metrics,       ignore_index=True)
+    diagnostics_df  = pd.concat(all_diagnostics,   ignore_index=True)
 
-    summary_df = build_all_zone_summary(metrics_df)
+    summary_df      = build_all_zone_summary(metrics_df)
     metrics_full_df = pd.concat([metrics_df, summary_df], ignore_index=True)
-    daily_mape_df = build_daily_mape(predictions_df)
+    daily_mape_df   = build_daily_mape(predictions_df)
 
-    export_csv(predictions_df, PREDICTIONS_DIR / "all_zones_predictions.csv")
-    export_csv(metrics_full_df, METRICS_DIR / "all_zones_metrics.csv")
-    export_csv(daily_mape_df, METRICS_DIR / "all_zones_daily_mape.csv")
-    export_csv(diagnostics_df, LOGS_DIR / "diagnostics_summary.csv")
+    # ── 2. CSV exports ────────────────────────────────────────────────────────
+    export_csv(predictions_df,  PREDICTIONS_DIR / "all_zones_predictions.csv")
+    export_csv(metrics_full_df, METRICS_DIR      / "all_zones_metrics.csv")
+    export_csv(daily_mape_df,   METRICS_DIR      / "all_zones_daily_mape.csv")
+    export_csv(diagnostics_df,  LOGS_DIR         / "diagnostics_summary.csv")
 
-    logging.info("Pipeline finished successfully")
+    today_df  = export_today_predictions(
+        predictions_df,
+        PREDICTIONS_DIR / "today_predictions.csv",
+        run_date,
+    )
+    future_df = export_future_predictions(
+        predictions_df,
+        PREDICTIONS_DIR / "future_predictions.csv",
+    )
+    export_latest_available_predictions(
+        predictions_df,
+        PREDICTIONS_DIR / "latest_predictions.csv",
+    )
+    export_snapshot(predictions_df, SNAPSHOTS_DIR, run_ts)
+    history_df = append_prediction_history(predictions_df, HISTORY_PATH, run_ts)
+
+    logging.info("CSV exports complete")
+
+    # ── 3. Decision dashboard ─────────────────────────────────────────────────
+    dashboard_df = build_decision_dashboard(
+        predictions_df=predictions_df,
+        history_path=HISTORY_PATH,
+        run_date=run_date,
+    )
+    export_csv(dashboard_df, OUTPUT_DIR / "decision_dashboard.csv")
+    logging.info("Decision dashboard built (%d zones)", len(dashboard_df))
+
+    # ── 4. Excel report ───────────────────────────────────────────────────────
+    build_excel_report(
+        output_path=EXCEL_REPORT,
+        dashboard_df=dashboard_df,
+        predictions_df=predictions_df,
+        metrics_df=metrics_full_df,
+        daily_mape_df=daily_mape_df,
+        diagnostics_df=diagnostics_df,
+        today_df=today_df if not today_df.empty else None,
+        future_df=future_df if not future_df.empty else None,
+    )
+    logging.info("Excel report written → %s", EXCEL_REPORT)
+
+    logging.info("Pipeline finished successfully (run_timestamp=%s)", run_ts)
 
 
 if __name__ == "__main__":
     main()
+    

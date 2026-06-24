@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from config import DATE_COL, ZERO_ACTUAL_THRESHOLD
+from config import DATE_COL
+from metrics import ZERO_ACTUAL_THRESHOLD
 
 
 def export_csv(df: pd.DataFrame, output_path: Path) -> None:

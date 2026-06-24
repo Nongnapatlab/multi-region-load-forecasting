@@ -27,7 +27,8 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 
-from config import DATE_COL, ZERO_ACTUAL_THRESHOLD
+from config import DATE_COL
+from metrics import ZERO_ACTUAL_THRESHOLD
 
 
 def _is_realized(actual: pd.Series) -> pd.Series:
