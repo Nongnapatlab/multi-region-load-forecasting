@@ -75,18 +75,30 @@ def main() -> None:
     all_predictions: list[pd.DataFrame] = []
     all_metrics:     list[pd.DataFrame] = []
     all_diagnostics: list[pd.DataFrame] = []
+    all_importance:  list[pd.DataFrame] = []
+    all_dist_shift:  list[pd.DataFrame] = []
 
     for zone_name, zone_config in ZONES.items():
-        zone_predictions, zone_metrics, zone_diagnostics = run_zone_pipeline(
-            zone_name, zone_config, CACHE_DIR
-        )
+        (
+            zone_predictions,
+            zone_metrics,
+            zone_diagnostics,
+            zone_importance,
+            zone_dist_shift,
+        ) = run_zone_pipeline(zone_name, zone_config, CACHE_DIR)
         all_predictions.append(zone_predictions)
         all_metrics.append(zone_metrics)
         all_diagnostics.append(zone_diagnostics)
+        if not zone_importance.empty:
+            all_importance.append(zone_importance)
+        if not zone_dist_shift.empty:
+            all_dist_shift.append(zone_dist_shift)
 
     predictions_df  = pd.concat(all_predictions,  ignore_index=True)
     metrics_df      = pd.concat(all_metrics,       ignore_index=True)
     diagnostics_df  = pd.concat(all_diagnostics,   ignore_index=True)
+    importance_df   = pd.concat(all_importance,    ignore_index=True) if all_importance else pd.DataFrame()
+    dist_shift_df   = pd.concat(all_dist_shift,    ignore_index=True) if all_dist_shift else pd.DataFrame()
 
     summary_df      = build_all_zone_summary(metrics_df)
     metrics_full_df = pd.concat([metrics_df, summary_df], ignore_index=True)
@@ -97,6 +109,10 @@ def main() -> None:
     export_csv(metrics_full_df, METRICS_DIR      / "all_zones_metrics.csv")
     export_csv(daily_mape_df,   METRICS_DIR      / "all_zones_daily_mape.csv")
     export_csv(diagnostics_df,  LOGS_DIR         / "diagnostics_summary.csv")
+    if not importance_df.empty:
+        export_csv(importance_df, LOGS_DIR / "feature_importance.csv")
+    if not dist_shift_df.empty:
+        export_csv(dist_shift_df, LOGS_DIR / "distribution_shift_check.csv")
 
     today_df  = export_today_predictions(
         predictions_df,
@@ -135,6 +151,8 @@ def main() -> None:
         diagnostics_df=diagnostics_df,
         today_df=today_df if not today_df.empty else None,
         future_df=future_df if not future_df.empty else None,
+        feature_importance_df=importance_df if not importance_df.empty else None,
+        distribution_shift_df=dist_shift_df if not dist_shift_df.empty else None,
     )
     logging.info("Excel report written → %s", EXCEL_REPORT)
 

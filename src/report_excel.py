@@ -47,6 +47,8 @@ def build_excel_report(
     bias_summary_df: pd.DataFrame = None,
     today_df: pd.DataFrame = None,
     future_df: pd.DataFrame = None,
+    feature_importance_df: pd.DataFrame = None,
+    distribution_shift_df: pd.DataFrame = None,
 ) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -57,6 +59,10 @@ def build_excel_report(
         ("daily_mape", daily_mape_df),
         ("diagnostics", diagnostics_df),
     ]
+    if feature_importance_df is not None:
+        sheets.append(("feature_importance", feature_importance_df))
+    if distribution_shift_df is not None:
+        sheets.append(("distribution_shift", distribution_shift_df))
     if bias_summary_df is not None:
         sheets.append(("bias_summary", bias_summary_df))
     if today_df is not None:

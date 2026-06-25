@@ -13,7 +13,7 @@ import numpy as np
 
 from config import DATE_COL, TARGET_COL, USE_LSTM
 from data_loader import load_zone_data
-from diagnostics import build_diagnostics
+from diagnostics import build_diagnostics, build_distribution_shift_check, build_feature_importance
 from ensemble import weighted_average_ensemble
 from export_results import export_csv
 from feature_engineering import build_features
@@ -59,8 +59,9 @@ def run_zone_pipeline(
     zone_name: str,
     zone_config: dict,
     cache_dir,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Train all models for one zone, return (predictions, metrics, diagnostics)."""
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Train all models for one zone, return (predictions, metrics,
+    diagnostics, feature_importance, distribution_shift)."""
 
     logging.info("Starting zone: %s", zone_name)
 
@@ -124,9 +125,19 @@ def run_zone_pipeline(
     diagnostics_df = build_diagnostics(
         zone_name, train_df, test_df, feature_cols
     )
+    distribution_shift_df = build_distribution_shift_check(zone_name, train_df, test_df)
+
+    importance_frames = []
+    for model_name, model in [("XGBoost", xgb_model), ("LightGBM", lgbm_model)]:
+        fi_df = build_feature_importance(zone_name, model, feature_cols, model_name)
+        if not fi_df.empty:
+            importance_frames.append(fi_df)
+    feature_importance_df = (
+        pd.concat(importance_frames, ignore_index=True) if importance_frames else pd.DataFrame()
+    )
 
     logging.info("Finished zone: %s", zone_name)
-    return test_result, metrics_df, diagnostics_df
+    return test_result, metrics_df, diagnostics_df, feature_importance_df, distribution_shift_df
 
 
 def build_all_zone_summary(metrics_df: pd.DataFrame) -> pd.DataFrame:
