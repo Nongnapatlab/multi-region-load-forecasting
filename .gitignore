@@ -1,13 +1,26 @@
+# Python cache
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+
+# Virtual Environment
 .venv/
 venv/
 env/
-output/*.csv
-output/*.xlsx
-output/*.log
+.env
+
+# ผลลัพธ์การรันและโฟลเดอร์ที่ไม่ควรเก็บ
+output/
+!output/.gitkeep
+
+# ไฟล์บีบอัด (ป้องกันการเผลอเอา .tar, .zip ขึ้น)
+*.tar
+*.tar.gz
+*.zip
+*.rar
+
+# ข้อมูลแคชและ IDE
 .idea/
 .vscode/
 .DS_Store
+data/cache/
