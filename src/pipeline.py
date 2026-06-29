@@ -26,9 +26,9 @@ from typing import Optional
 # Ensemble weights — LSTM is included but down-weighted given its higher MAPE.
 # Adjust here without touching the rest of the code.
 ENSEMBLE_WEIGHTS = {
-    "pred_xgb": 0.40,
-    "pred_lgbm": 0.40,
-    "pred_lstm": 0.20,
+    "pred_xgb":  0.50,
+    "pred_lgbm": 0.50,
+    "pred_lstm": 0.00,
 }
 ENSEMBLE_WEIGHTS_NO_LSTM = {
     "pred_xgb": 0.50,
@@ -76,6 +76,15 @@ def run_zone_pipeline(
 
     # ── Data ──────────────────────────────────────────────────────────
     train_df, test_df = load_zone_data(zone_name, zone_config, cache_dir)
+
+    # ── บันทึก actual จริงก่อน build_features จะ ffill requirement ──────
+    # _fill_placeholder_zeros ใน feature_engineering.py ffill requirement
+    # เพื่อให้ lag features ได้ค่าที่สมเหตุสมผลแทน 0 — ถูกต้องสำหรับ feature
+    # แต่ถ้าปล่อยให้ test_df[TARGET_COL] ถูก ffill แล้วเอามาตั้งเป็น actual
+    # actual จะกลายเป็นค่าซ้ำ ๆ (flat line) ซึ่งทำให้ MAPE ผิดทั้งหมด
+    # แก้ไข: เก็บ original targets ไว้ก่อน แล้วค่อยเอามาใส่หลัง build_features
+    original_test_targets = test_df[TARGET_COL].copy()
+
     train_df = build_features(train_df)
     test_df  = build_features(test_df)
 
@@ -87,9 +96,9 @@ def run_zone_pipeline(
     xgb_model  = XGBModel().fit(X_train, y_train)
     lgbm_model = LGBMModel().fit(X_train, y_train)
 
-    # ── Predictions frame ─────────────────────────────────────────────
-    test_result = test_df[[DATE_COL, TARGET_COL, "zone"]].copy()
-    test_result = test_result.rename(columns={TARGET_COL: "actual"})
+    # ── Predictions frame (ใช้ original targets ไม่ใช่ ffill'd version) ──
+    test_result = test_df[[DATE_COL, "zone"]].copy()
+    test_result["actual"] = original_test_targets.values  # ← original เท่านั้น
     test_result["pred_xgb"]  = xgb_model.predict(X_test)
     test_result["pred_lgbm"] = lgbm_model.predict(X_test)
 

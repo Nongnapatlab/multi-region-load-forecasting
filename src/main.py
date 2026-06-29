@@ -183,7 +183,6 @@ def main() -> None:
     export_latest_available_predictions(predictions_df,   PREDICTIONS_DIR / "latest_predictions.csv")
     export_snapshot(predictions_df, SNAPSHOTS_DIR, run_ts)
 
-
     # append ลง history (รวมถึงค่าที่ bias-corrected แล้วสำหรับ future rows)
     append_prediction_history(predictions_df, HISTORY_PATH, run_ts)
     logging.info("CSV exports complete")
@@ -217,4 +216,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    

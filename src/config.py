@@ -92,13 +92,11 @@ XGB_PARAMS = {
     "subsample": 0.9, "colsample_bytree": 0.9,
     "objective": "reg:squarederror", "random_state": RANDOM_STATE,
 }
-
 LGBM_PARAMS = {
     "n_estimators": 300, "max_depth": 6, "learning_rate": 0.05,
     "subsample": 0.9, "colsample_bytree": 0.9,
     "objective": "regression", "random_state": RANDOM_STATE, "verbose": -1,
 }
-
 LSTM_PARAMS = {
     "sequence_length": LSTM_SEQUENCE_LENGTH,
     "epochs": 20, "batch_size": 32, "units": 64, "dropout": 0.2,

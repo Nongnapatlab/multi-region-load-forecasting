@@ -499,22 +499,47 @@ def dashboard(pred_all, today):
     df["for_date"]  = pd.to_datetime(df["for_date"])
     df["date_only"] = df["for_date"].dt.date
     yd = today - timedelta(days=1)
+
     rows = []
     for zone in sorted(df["reg"].unique()):
-        z  = df[(df["reg"]==zone)]
-        y  = z[z["date_only"]==yd];   yp = y[y["is_peak"]==1]
-        t  = z[z["date_only"]==today]; tp = t[t["is_peak"]==1]
+        z  = df[df["reg"] == zone]
+        y  = z[z["date_only"] == yd]
+        t  = z[z["date_only"] == today]
+        yp = y[y["is_peak"] == 1] if not y.empty else y
+        tp = t[t["is_peak"] == 1] if not t.empty else t
+
+        # ── yesterday actual ─────────────────────────────
+        if not y.empty and y["actual"].notna().any():
+            y_avg   = round(y["actual"].mean(), 2)
+            # ✅ หา peak จริง — เวลาที่ actual สูงสุด
+            peak_idx  = y["actual"].idxmax()
+            y_peak    = round(y.loc[peak_idx, "actual"], 2)
+            y_peak_t  = str(y.loc[peak_idx, "for_date"])
+        else:
+            y_avg, y_peak, y_peak_t = None, None, None
+
+        # ── today forecast ────────────────────────────────
+        if not t.empty:
+            t_avg  = round(t["pred_ensemble"].mean(), 2)
+            # ✅ หา forecast peak — เวลาที่ ensemble สูงสุด
+            if not tp.empty:
+                fp_idx = tp["pred_ensemble"].idxmax()
+                t_peak = round(tp.loc[fp_idx, "pred_ensemble"], 2)
+                t_peak_t = str(tp.loc[fp_idx, "for_date"])
+            else:
+                t_peak, t_peak_t = None, None
+        else:
+            t_avg, t_peak, t_peak_t = None, None, None
+
         rows.append({
             "date_run"              : str(today),
             "zone"                  : zone,
-            "yesterday_actual_avg"  : round(y["actual"].mean(),2)       if not y.empty  else None,
-            "yesterday_peak_actual" : round(yp["actual"].max(),2)        if not yp.empty else None,
-            "yesterday_plan_peak"   : round(yp["actual"].sum(),2)        if not yp.empty else None,
-            "yesterday_ens_mape_%"  : round(y["ape_ensemble"].mean(),4)  if not y.empty  else None,
-            "today_forecast_avg"    : round(t["pred_ensemble"].mean(),2) if not t.empty  else None,
-            "today_peak_forecast"   : round(tp["pred_ensemble"].max(),2) if not tp.empty else None,
-            "today_forecast_w_avg"  : round(t["pred_ensemble_w"].mean(),2) if not t.empty else None,
-            "today_peak_forecast_w" : round(tp["pred_ensemble_w"].max(),2) if not tp.empty else None,
+            "yesterday_actual_avg"  : y_avg,
+            "yesterday_peak_actual" : y_peak,    #  max MW จริง
+            "yesterday_peak_time"   : y_peak_t,  #  เวลาจริง
+            "today_forecast_avg"    : t_avg,
+            "today_peak_forecast"   : t_peak,    #  forecast peak
+            "today_peak_time"       : t_peak_t,  #  เวลา forecast peak
             "plan_reference_url"    : PLAN_URL,
         })
     return pd.DataFrame(rows)

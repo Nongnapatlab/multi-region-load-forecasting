@@ -1,5 +1,5 @@
 zone,check,value
-CAC,train_rows,78522
+CAC,train_rows,78666
 CAC,test_rows,288
 CAC,feature_count,47
 CAC,train_missing_total,0
@@ -7,8 +7,8 @@ CAC,test_missing_total,0
 CAC,train_duplicate_dates,0
 CAC,test_duplicate_dates,0
 CAC,train_target_zero_count,0
-CAC,test_target_zero_count,257
-MAC,train_rows,78522
+CAC,test_target_zero_count,0
+MAC,train_rows,78666
 MAC,test_rows,288
 MAC,feature_count,47
 MAC,train_missing_total,0
@@ -16,8 +16,8 @@ MAC,test_missing_total,0
 MAC,train_duplicate_dates,0
 MAC,test_duplicate_dates,0
 MAC,train_target_zero_count,0
-MAC,test_target_zero_count,257
-NAC,train_rows,78522
+MAC,test_target_zero_count,0
+NAC,train_rows,78666
 NAC,test_rows,288
 NAC,feature_count,47
 NAC,train_missing_total,0
@@ -25,8 +25,8 @@ NAC,test_missing_total,0
 NAC,train_duplicate_dates,0
 NAC,test_duplicate_dates,0
 NAC,train_target_zero_count,0
-NAC,test_target_zero_count,257
-NEC,train_rows,78522
+NAC,test_target_zero_count,0
+NEC,train_rows,78666
 NEC,test_rows,288
 NEC,feature_count,47
 NEC,train_missing_total,0
@@ -34,8 +34,8 @@ NEC,test_missing_total,0
 NEC,train_duplicate_dates,0
 NEC,test_duplicate_dates,0
 NEC,train_target_zero_count,0
-NEC,test_target_zero_count,257
-SAC,train_rows,78522
+NEC,test_target_zero_count,0
+SAC,train_rows,78666
 SAC,test_rows,288
 SAC,feature_count,47
 SAC,train_missing_total,0
@@ -43,4 +43,4 @@ SAC,test_missing_total,0
 SAC,train_duplicate_dates,0
 SAC,test_duplicate_dates,0
 SAC,train_target_zero_count,0
-SAC,test_target_zero_count,257
+SAC,test_target_zero_count,0
