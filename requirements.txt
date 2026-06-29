@@ -10,3 +10,4 @@ seaborn
 requests
 joblib
 holidays
+scipy>=1.11.0

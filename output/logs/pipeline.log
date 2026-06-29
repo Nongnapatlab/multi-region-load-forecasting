@@ -237,3 +237,82 @@
 2026-06-26 08:05:23,909 | INFO | Decision dashboard built (5 zones)
 2026-06-26 08:05:25,356 | INFO | Excel report written → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
 2026-06-26 08:05:25,356 | INFO | Pipeline finished successfully (run_timestamp=20260626_075817)
+2026-06-26 10:35:32,642 | INFO | Pipeline started  (run_timestamp=20260626_103532)
+2026-06-26 10:35:32,642 | INFO | Starting zone: CAC
+2026-06-26 10:35:51,895 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-26 10:35:52,472 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-26 10:36:29,762 | INFO | Finished zone: CAC
+2026-06-26 10:36:29,768 | INFO | Starting zone: MAC
+2026-06-26 10:36:46,661 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-26 10:36:47,201 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-26 10:37:46,343 | INFO | Finished zone: MAC
+2026-06-26 10:37:46,350 | INFO | Starting zone: NAC
+2026-06-26 10:38:04,100 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-26 10:38:04,568 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-26 10:38:48,554 | INFO | Finished zone: NAC
+2026-06-26 10:38:48,559 | INFO | Starting zone: NEC
+2026-06-26 10:39:04,996 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-26 10:39:05,475 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-26 10:40:26,280 | INFO | Finished zone: NEC
+2026-06-26 10:40:26,286 | INFO | Starting zone: SAC
+2026-06-26 10:40:46,104 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-26 10:40:46,630 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-26 10:41:21,568 | INFO | Finished zone: SAC
+2026-06-26 10:41:21,745 | INFO | CSV exports complete
+2026-06-26 10:41:21,775 | INFO | Decision dashboard built (5 zones)
+2026-06-26 10:41:23,198 | INFO | Excel report written → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-26 10:41:23,198 | INFO | Pipeline finished successfully (run_timestamp=20260626_103532)
+2026-06-27 21:04:24,056 | INFO | Pipeline started  (run_timestamp=20260627_210424)
+2026-06-27 21:04:24,057 | INFO | Starting zone: CAC
+2026-06-27 21:04:39,827 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-27 21:04:40,378 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-27 21:08:27,590 | INFO | Pipeline started  (run_timestamp=20260627_210827)
+2026-06-27 21:08:27,590 | INFO | Starting zone: CAC
+2026-06-27 21:08:44,119 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-27 21:08:44,657 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-27 21:09:56,196 | INFO | Finished zone: CAC
+2026-06-27 21:09:56,201 | INFO | Starting zone: MAC
+2026-06-27 21:10:09,842 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-27 21:10:10,435 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-27 21:12:13,063 | INFO | Finished zone: MAC
+2026-06-27 21:12:13,066 | INFO | Starting zone: NAC
+2026-06-27 21:12:27,523 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-27 21:12:28,119 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-27 21:13:56,583 | INFO | Finished zone: NAC
+2026-06-27 21:13:56,584 | INFO | Starting zone: NEC
+2026-06-27 21:14:08,973 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-27 21:14:09,463 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-27 21:17:01,456 | INFO | Finished zone: NEC
+2026-06-27 21:17:01,458 | INFO | Starting zone: SAC
+2026-06-27 21:17:14,390 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-27 21:17:14,897 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-27 21:18:26,869 | INFO | Finished zone: SAC
+2026-06-27 21:18:27,041 | INFO | CSV exports complete
+2026-06-27 21:18:27,070 | INFO | Decision dashboard built (5 zones)
+2026-06-27 21:18:28,779 | INFO | Excel report written → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-27 21:18:28,779 | INFO | Pipeline finished successfully (run_timestamp=20260627_210827)
+2026-06-28 23:08:04,683 | INFO | Pipeline started  (run_timestamp=20260628_230804)
+2026-06-28 23:08:04,683 | INFO | Starting zone: CAC
+2026-06-28 23:08:20,843 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-28 23:08:21,404 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-28 23:09:34,325 | INFO | Finished zone: CAC
+2026-06-28 23:09:34,327 | INFO | Starting zone: MAC
+2026-06-28 23:09:48,256 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-28 23:09:48,843 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-28 23:11:51,416 | INFO | Finished zone: MAC
+2026-06-28 23:11:51,417 | INFO | Starting zone: NAC
+2026-06-28 23:12:03,623 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-28 23:12:04,138 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-28 23:13:33,654 | INFO | Finished zone: NAC
+2026-06-28 23:13:33,656 | INFO | Starting zone: NEC
+2026-06-28 23:13:46,895 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-28 23:13:47,534 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-28 23:16:38,559 | INFO | Finished zone: NEC
+2026-06-28 23:16:38,562 | INFO | Starting zone: SAC
+2026-06-28 23:16:51,911 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-28 23:16:52,512 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-28 23:18:04,174 | INFO | Finished zone: SAC
+2026-06-28 23:18:04,327 | INFO | CSV exports complete
+2026-06-28 23:18:04,357 | INFO | Decision dashboard built (5 zones)
+2026-06-28 23:18:06,011 | INFO | Excel report written → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-28 23:18:06,011 | INFO | Pipeline finished successfully (run_timestamp=20260628_230804)

@@ -21,6 +21,7 @@ from metrics import add_absolute_percentage_error, evaluate_predictions
 from models_ml import XGBModel, LGBMModel
 from models_lstm import LSTMModel
 from preprocess import prepare_features
+from typing import Optional
 
 # Ensemble weights — LSTM is included but down-weighted given its higher MAPE.
 # Adjust here without touching the rest of the code.
@@ -59,9 +60,17 @@ def run_zone_pipeline(
     zone_name: str,
     zone_config: dict,
     cache_dir,
+    ensemble_weights: Optional[dict] = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Train all models for one zone, return (predictions, metrics,
-    diagnostics, feature_importance, distribution_shift)."""
+    diagnostics, feature_importance, distribution_shift).
+
+    ensemble_weights:
+        ถ้าส่งมา → ใช้ weights นั้น (โหลดมาจาก optimal_weights.json ใน main.py)
+        ถ้าไม่ส่ง → ใช้ ENSEMBLE_WEIGHTS จาก pipeline.py (hardcoded default)
+        เหตุผลที่รับ param นี้จากข้างนอก: ให้ main.py โหลด optimal weights ก่อน
+        แล้วส่งเข้ามา — ทำให้ทุก zone ใช้ weights เดียวกัน และ testable แยกได้
+    """
 
     logging.info("Starting zone: %s", zone_name)
 
@@ -84,12 +93,10 @@ def run_zone_pipeline(
     test_result["pred_xgb"]  = xgb_model.predict(X_test)
     test_result["pred_lgbm"] = lgbm_model.predict(X_test)
 
-    # Ensemble of XGBoost + LightGBM only, computed regardless of whether
-    # LSTM is used. This gives a stable baseline to compare the full
-    # 3-model ensemble against — useful since LSTM's scoreable rows are
-    # often very few (sequence warm-up consumes most of a short test set),
-    # so it's hard to tell from pred_ensemble alone whether LSTM is helping
-    # or hurting.
+    # ── Resolve weights: ใช้ที่ส่งมา ถ้าไม่ส่งมาใช้ default ────────────────
+    active_weights = ensemble_weights if ensemble_weights is not None else ENSEMBLE_WEIGHTS
+
+    # Ensemble XGB+LGBM เสมอ (baseline ไม่ขึ้นกับ LSTM)
     test_result = weighted_average_ensemble(
         test_result,
         weights=ENSEMBLE_WEIGHTS_NO_LSTM,
@@ -99,7 +106,7 @@ def run_zone_pipeline(
     if USE_LSTM:
         lstm_model = LSTMModel().fit(X_train, y_train)
         test_result["pred_lstm"] = lstm_model.predict(X_test)
-        weights = ENSEMBLE_WEIGHTS
+        weights = active_weights       # ← ใช้ optimal weights ที่รับมา
     else:
         test_result["pred_lstm"] = pd.NA
         weights = ENSEMBLE_WEIGHTS_NO_LSTM
@@ -172,26 +179,52 @@ def build_all_zone_summary(metrics_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_daily_mape(predictions_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    MAPE รายวัน (ค่าเฉลี่ย APE ของทุก time slot ใน 1 วัน)
+
+    บั๊กเดิม:
+        groupby(DATE_COL) → DATE_COL มี timestamp เต็ม (เช่น "2026-06-24 00:30:00")
+        ทำให้แต่ละ timestamp กลายเป็น group ของตัวเอง = ไม่มีการ aggregate จริง
+
+    แก้ไข:
+        1. แยก date_only (ไม่มีเวลา) แล้ว groupby date_only
+           → ได้ค่าเฉลี่ย APE ของทุก time slot ในวันนั้นจริง ๆ
+        2. กรองเฉพาะ scored rows (actual > threshold) ก่อน groupby
+           → future rows ที่ actual=0 จะทำให้ APE = inf ซึ่งจะปน mean ไป
+           → daily_mape จะมีเฉพาะวันที่มี actual จริงเท่านั้น (แปลผลได้ถูกต้อง)
+    """
+    from metrics import ZERO_ACTUAL_THRESHOLD
+
     rows = []
     for zone, zone_df in predictions_df.groupby("zone"):
+        # ─── แก้ไข: ใช้ date_only แทน full timestamp ───────────────────────
+        zone_df = zone_df.copy()
+        zone_df["_date"] = pd.to_datetime(zone_df[DATE_COL], errors="coerce").dt.date
+
+        # ─── แก้ไข: กรองเฉพาะ scored rows ────────────────────────────────
+        scored_df = zone_df[zone_df["actual"].abs() >= ZERO_ACTUAL_THRESHOLD]
+        if scored_df.empty:
+            continue
+
         for model_name, ape_col in [
-            ("XGBoost", "ape_pred_xgb"),
-            ("LightGBM", "ape_pred_lgbm"),
-            ("LSTM", "ape_pred_lstm"),
+            ("XGBoost",             "ape_pred_xgb"),
+            ("LightGBM",            "ape_pred_lgbm"),
+            ("LSTM",                "ape_pred_lstm"),
             ("Ensemble_XGB_LGBM_LSTM", "ape_pred_ensemble"),
-            ("Ensemble_XGB_LGBM", "ape_pred_ensemble_xgb_lgbm"),
+            ("Ensemble_XGB_LGBM",   "ape_pred_ensemble_xgb_lgbm"),
         ]:
-            if DATE_COL not in zone_df.columns or ape_col not in zone_df.columns:
+            if ape_col not in scored_df.columns:
                 continue
             grouped = (
-                zone_df.groupby(DATE_COL, dropna=False)[ape_col]
+                scored_df.groupby("_date", dropna=False)[ape_col]
                 .mean()
                 .reset_index()
+                .rename(columns={"_date": "date", ape_col: "daily_mape"})
             )
             grouped["zone"]  = zone
             grouped["model"] = model_name
-            grouped = grouped.rename(columns={ape_col: "daily_mape"})
-            rows.append(grouped)
+            rows.append(grouped[["date", "zone", "model", "daily_mape"]])
+
     if not rows:
         return pd.DataFrame()
     return pd.concat(rows, ignore_index=True)
