@@ -49,6 +49,16 @@ MIN_SCORED_FOR_BIAS_CORRECTION = 24   # ≈ 12 ชั่วโมงของข
 WEIGHT_OPT_ENABLED            = True
 MIN_SCORED_FOR_WEIGHT_OPT     = 48   # ≈ 1 วันเต็มของข้อมูลจริง
 
+# ── Feature exclusion list ────────────────────────────────────────────────────
+# LAG_1D และ LAG_2D ถูกตัดออก เพราะ server ไม่ populate ค่าให้ใน test set
+# (เห็นเป็น 0 ทุกแถวใน test ทั้งที่ train มีค่าจริง → train/test mismatch)
+# เหลือแค่ LAG_3D ที่ server รับรองว่าจะมีค่า (ตามคำสั่งที่กำหนดไว้)
+EXCLUDED_FEATURE_COLS = [
+    "REQUIREMENT_LAG_1D",
+    "REQUIREMENT_LAG_2D",
+    "REQUIREMENT_LAG_4D",   # ตัดออกด้วยเพื่อ consistency — ใช้แค่ LAG_3D
+]
+
 ZONES = {
     "CAC": {
         "train": "http://sothailand.com/centerimg/CAC_Lag123.csv",

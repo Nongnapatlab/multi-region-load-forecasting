@@ -1,11 +1,7 @@
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-from config import DATE_COL, TARGET_COL
-
-# คอลัมน์ lag ที่ไม่ต้องการใช้เป็น feature — ตัดออกจาก auto feature-selection
-# เหลือใช้แค่ REQUIREMENT_LAG_3D ตามที่ต้องการ
-EXCLUDE_LAG_COLS = ["REQUIREMENT_LAG_1D", "REQUIREMENT_LAG_2D", "REQUIREMENT_LAG_4D"]
+from config import DATE_COL, TARGET_COL, EXCLUDED_FEATURE_COLS
 
 
 def add_basic_time_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,9 +41,14 @@ def prepare_features(train_df: pd.DataFrame, test_df: pd.DataFrame) -> tuple[pd.
     train_df = encode_object_columns(train_df, exclude_cols=[DATE_COL, TARGET_COL, "zone"])
     test_df = encode_object_columns(test_df, exclude_cols=[DATE_COL, TARGET_COL, "zone"])
 
+    # กรอง feature ออกตาม EXCLUDED_FEATURE_COLS ใน config.py
+    # เหตุผล: บาง column เช่น LAG_1D, LAG_2D มีค่าใน train แต่เป็น 0 ทุกแถวใน test
+    # (server ไม่ populate) → train/test mismatch → model ทำนายผิดพื้นฐาน
+    # แก้ที่ config.py บรรทัดเดียวถ้าอยากเพิ่ม/ลด column ที่ exclude
     feature_cols = [
         c for c in train_df.columns
-        if c not in [DATE_COL, TARGET_COL, "zone"] + EXCLUDE_LAG_COLS
+        if c not in [DATE_COL, TARGET_COL, "zone"]
+        and c not in EXCLUDED_FEATURE_COLS
         and pd.api.types.is_numeric_dtype(train_df[c])
     ]
 

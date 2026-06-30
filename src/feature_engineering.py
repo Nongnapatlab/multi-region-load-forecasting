@@ -32,14 +32,27 @@ def _fill_placeholder_zeros(df: pd.DataFrame) -> pd.DataFrame:
     ──────────────────────────────────────────────────────────────────
     """
     df = df.copy()
+
+    # ── requirement: ffill placeholder zeros ──────────────────────────────
     if TARGET_COL in df.columns:
-        # แทนที่ 0 ด้วย NaN → ffill → bfill สำหรับแถวต้น
         df[TARGET_COL] = (
             df[TARGET_COL]
             .replace(0, float("nan"))
             .ffill()
             .bfill()
         )
+
+    # ── LAG_3D: fill zeros ด้วย REQ_LAST168H (7-day lag) เป็น proxy ──────
+    # server ไม่ populate LAG_3D ใน test → เป็น 0 ทุกแถว
+    # ใช้ REQ_LAST168H แทนระหว่างที่ยังไม่มีค่า
+    # (ทั้งคู่คือ demand ช่วงเวลาเดียวกันของอีก N วันก่อน)
+    if "REQUIREMENT_LAG_3D" in df.columns and "REQ_LAST168H" in df.columns:
+        # แปลงเป็น float ก่อน เพราะ LAG_3D อาจเป็น int64 แต่ REQ_LAST168H เป็น float64
+        df["REQUIREMENT_LAG_3D"] = df["REQUIREMENT_LAG_3D"].astype(float)
+        zero_mask = df["REQUIREMENT_LAG_3D"] == 0
+        if zero_mask.any():
+            df.loc[zero_mask, "REQUIREMENT_LAG_3D"] = df.loc[zero_mask, "REQ_LAST168H"]
+
     return df
 
 
