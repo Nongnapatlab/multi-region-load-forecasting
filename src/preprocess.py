@@ -3,6 +3,10 @@ from sklearn.impute import SimpleImputer
 
 from config import DATE_COL, TARGET_COL
 
+# คอลัมน์ lag ที่ไม่ต้องการใช้เป็น feature — ตัดออกจาก auto feature-selection
+# เหลือใช้แค่ REQUIREMENT_LAG_3D ตามที่ต้องการ
+EXCLUDE_LAG_COLS = ["REQUIREMENT_LAG_1D", "REQUIREMENT_LAG_2D", "REQUIREMENT_LAG_4D"]
+
 
 def add_basic_time_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -43,7 +47,7 @@ def prepare_features(train_df: pd.DataFrame, test_df: pd.DataFrame) -> tuple[pd.
 
     feature_cols = [
         c for c in train_df.columns
-        if c not in [DATE_COL, TARGET_COL, "zone"]
+        if c not in [DATE_COL, TARGET_COL, "zone"] + EXCLUDE_LAG_COLS
         and pd.api.types.is_numeric_dtype(train_df[c])
     ]
 

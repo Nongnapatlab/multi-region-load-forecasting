@@ -164,8 +164,7 @@ FEATURE_COLS = [
     "UVIndex_W", "CloudCover_W", "WetBulb_W", "IsDaylight_W",
     "is_tou", "hour", "minute", "DayOfWeek", "day", "month", "year",
     "TIME_SLOT",
-    "REQUIREMENT_LAG_1D", "REQUIREMENT_LAG_2D",
-    "REQUIREMENT_LAG_3D", "REQUIREMENT_LAG_4D",
+    "REQUIREMENT_LAG_3D",
     "PEAK_OFFPEAK_NUMERIC",
 ]
 
@@ -772,3 +771,4 @@ if __name__ == "__main__":
     if args.mode:
         CONFIG_MODE = args.mode
     start_scheduler() if args.schedule else run_pipeline()
+    
