@@ -504,3 +504,131 @@
 2026-06-29 16:08:19,842 | INFO | Excel report → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
 2026-06-29 16:08:19,842 | INFO | Pipeline finished successfully (run_timestamp=20260629_155811)
 2026-06-29 16:08:19,842 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 08:53:19,904 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 08:53:19,904 | INFO | Pipeline started  (run_timestamp=20260630_085319)
+2026-06-30 08:53:19,904 | INFO | Loaded optimal weights: XGB=22.1% LGBM=77.9% LSTM=0.0% (MAPE 12.709% จาก 3905 rows ณ 2026-06-29T16:08:18)
+2026-06-30 08:53:19,904 | INFO | Starting zone: CAC
+2026-06-30 08:53:40,323 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-30 08:53:41,034 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-30 08:53:58,673 | INFO | Finished zone: CAC
+2026-06-30 08:53:58,676 | INFO | Starting zone: MAC
+2026-06-30 08:54:15,661 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-30 08:54:16,113 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-30 08:54:30,743 | INFO | Finished zone: MAC
+2026-06-30 08:54:30,746 | INFO | Starting zone: NAC
+2026-06-30 08:54:47,816 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-30 08:54:48,307 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-30 08:55:02,854 | INFO | Finished zone: NAC
+2026-06-30 08:55:02,856 | INFO | Starting zone: NEC
+2026-06-30 08:55:20,448 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-30 08:55:20,839 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-30 08:56:17,597 | INFO | Finished zone: NEC
+2026-06-30 08:56:17,598 | INFO | Starting zone: SAC
+2026-06-30 08:56:34,636 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-30 08:56:35,988 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-30 08:56:50,368 | INFO | Finished zone: SAC
+2026-06-30 08:56:50,375 | INFO | ────────────────────────────────────────
+2026-06-30 08:56:50,375 | INFO | Auto-adaptation layer
+2026-06-30 08:56:50,383 | CRITICAL | MAPE ALERT | CAC | Ensemble MAPE=6.62% > 3.0% | BIAS=-583.2 MW
+2026-06-30 08:56:50,386 | CRITICAL | MAPE ALERT | CAC | Ensemble MAPE=7.00% > 3.0% | BIAS=-617.4 MW
+2026-06-30 08:56:50,386 | CRITICAL | MAPE ALERTS: 2 ภาคที่ต้องการตรวจสอบ
+2026-06-30 08:56:50,403 | INFO | Bias correction | CAC | UNDER-predict 1275.0 MW avg จาก 802 rows → +1275.0 MW จะถูกบวกใน future predictions
+2026-06-30 08:56:50,404 | INFO | Bias correction | MAC | UNDER-predict 1678.9 MW avg จาก 802 rows → +1678.9 MW จะถูกบวกใน future predictions
+2026-06-30 08:56:50,404 | INFO | Bias correction | NAC | UNDER-predict 335.3 MW avg จาก 802 rows → +335.3 MW จะถูกบวกใน future predictions
+2026-06-30 08:56:50,404 | INFO | Bias correction | NEC | UNDER-predict 336.7 MW avg จาก 802 rows → +336.7 MW จะถูกบวกใน future predictions
+2026-06-30 08:56:50,405 | INFO | Bias correction | SAC | UNDER-predict 228.5 MW avg จาก 802 rows → +228.5 MW จะถูกบวกใน future predictions
+2026-06-30 08:56:50,416 | INFO | Bias corrections applied: {'CAC': '+1275.0 MW', 'MAC': '+1678.9 MW', 'NAC': '+335.3 MW', 'NEC': '+336.7 MW', 'SAC': '+228.5 MW'}
+2026-06-30 08:56:50,432 | INFO | Optimal weights updated | XGB=21.9% LGBM=78.1% LSTM=0.0% → MAPE 12.462% (4010 scored rows)
+2026-06-30 08:56:50,433 | INFO | Optimal weights updated for next run: XGB=21.9% LGBM=78.1% LSTM=0.0%
+2026-06-30 08:56:50,433 | INFO | ────────────────────────────────────────
+2026-06-30 08:56:50,596 | INFO | CSV exports complete
+2026-06-30 08:56:50,636 | INFO | Decision dashboard built (5 zones)
+2026-06-30 08:56:51,359 | INFO | Excel report → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-30 08:56:51,359 | INFO | Pipeline finished successfully (run_timestamp=20260630_085319)
+2026-06-30 08:56:51,359 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 09:30:44,387 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 09:30:44,387 | INFO | Pipeline started  (run_timestamp=20260630_093044)
+2026-06-30 09:30:44,388 | INFO | Loaded optimal weights: XGB=21.9% LGBM=78.1% LSTM=0.0% (MAPE 12.462% จาก 4010 rows ณ 2026-06-30T08:56:50)
+2026-06-30 09:30:44,388 | INFO | Starting zone: CAC
+2026-06-30 09:31:06,504 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-30 09:31:07,058 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-30 09:31:24,658 | INFO | Finished zone: CAC
+2026-06-30 09:31:24,663 | INFO | Starting zone: MAC
+2026-06-30 09:31:40,453 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-30 09:31:41,021 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-30 09:31:55,216 | INFO | Finished zone: MAC
+2026-06-30 09:31:55,218 | INFO | Starting zone: NAC
+2026-06-30 09:32:11,160 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-30 09:32:11,615 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-30 09:32:25,731 | INFO | Finished zone: NAC
+2026-06-30 09:32:25,732 | INFO | Starting zone: NEC
+2026-06-30 09:32:43,531 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-30 09:32:44,067 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-30 09:33:41,452 | INFO | Finished zone: NEC
+2026-06-30 09:33:41,453 | INFO | Starting zone: SAC
+2026-06-30 09:33:57,915 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-30 09:33:58,385 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-30 09:34:12,664 | INFO | Finished zone: SAC
+2026-06-30 09:34:12,682 | INFO | ────────────────────────────────────────
+2026-06-30 09:34:12,682 | INFO | Auto-adaptation layer
+2026-06-30 09:34:12,690 | CRITICAL | MAPE ALERT | CAC | Ensemble MAPE=6.62% > 3.0% | BIAS=-583.0 MW
+2026-06-30 09:34:12,693 | CRITICAL | MAPE ALERT | CAC | Ensemble MAPE=7.00% > 3.0% | BIAS=-617.4 MW
+2026-06-30 09:34:12,693 | CRITICAL | MAPE ALERTS: 2 ภาคที่ต้องการตรวจสอบ
+2026-06-30 09:34:12,712 | INFO | Bias correction | CAC | UNDER-predict 1257.3 MW avg จาก 823 rows → +1257.3 MW จะถูกบวกใน future predictions
+2026-06-30 09:34:12,712 | INFO | Bias correction | MAC | UNDER-predict 1637.8 MW avg จาก 823 rows → +1637.8 MW จะถูกบวกใน future predictions
+2026-06-30 09:34:12,713 | INFO | Bias correction | NAC | UNDER-predict 328.3 MW avg จาก 823 rows → +328.3 MW จะถูกบวกใน future predictions
+2026-06-30 09:34:12,713 | INFO | Bias correction | NEC | UNDER-predict 329.3 MW avg จาก 823 rows → +329.3 MW จะถูกบวกใน future predictions
+2026-06-30 09:34:12,713 | INFO | Bias correction | SAC | UNDER-predict 222.6 MW avg จาก 823 rows → +222.6 MW จะถูกบวกใน future predictions
+2026-06-30 09:34:12,726 | INFO | Bias corrections applied: {'CAC': '+1257.3 MW', 'MAC': '+1637.8 MW', 'NAC': '+328.3 MW', 'NEC': '+329.3 MW', 'SAC': '+222.6 MW'}
+2026-06-30 09:34:12,745 | INFO | Optimal weights updated | XGB=20.5% LGBM=79.5% LSTM=0.0% → MAPE 12.218% (4115 scored rows)
+2026-06-30 09:34:12,745 | INFO | Optimal weights updated for next run: XGB=20.5% LGBM=79.5% LSTM=0.0%
+2026-06-30 09:34:12,745 | INFO | ────────────────────────────────────────
+2026-06-30 09:34:12,914 | INFO | CSV exports complete
+2026-06-30 09:34:12,956 | INFO | Decision dashboard built (5 zones)
+2026-06-30 09:34:13,684 | INFO | Excel report → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-30 09:34:13,684 | INFO | Pipeline finished successfully (run_timestamp=20260630_093044)
+2026-06-30 09:34:13,684 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 13:49:42,726 | INFO | ════════════════════════════════════════════════════════════
+2026-06-30 13:49:42,726 | INFO | Pipeline started  (run_timestamp=20260630_134942)
+2026-06-30 13:49:42,727 | INFO | Loaded optimal weights: XGB=20.5% LGBM=79.5% LSTM=0.0% (MAPE 12.217% จาก 4115 rows ณ 2026-06-30T09:34:12)
+2026-06-30 13:49:42,727 | INFO | Starting zone: CAC
+2026-06-30 13:50:00,853 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_Lag123.csv
+2026-06-30 13:50:01,452 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/CAC_test_Lag123.csv
+2026-06-30 13:50:19,017 | INFO | Finished zone: CAC
+2026-06-30 13:50:19,019 | INFO | Starting zone: MAC
+2026-06-30 13:50:35,937 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_Lag123.csv
+2026-06-30 13:50:36,546 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/MAC_test_Lag123.csv
+2026-06-30 13:50:51,588 | INFO | Finished zone: MAC
+2026-06-30 13:50:51,589 | INFO | Starting zone: NAC
+2026-06-30 13:51:07,450 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_Lag123.csv
+2026-06-30 13:51:07,941 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NAC_test_Lag123.csv
+2026-06-30 13:51:22,488 | INFO | Finished zone: NAC
+2026-06-30 13:51:22,492 | INFO | Starting zone: NEC
+2026-06-30 13:51:38,769 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_Lag123.csv
+2026-06-30 13:51:39,326 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/NEC_test_Lag123.csv
+2026-06-30 13:51:54,709 | INFO | Finished zone: NEC
+2026-06-30 13:51:54,711 | INFO | Starting zone: SAC
+2026-06-30 13:52:12,516 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_Lag123.csv
+2026-06-30 13:52:12,949 | INFO | Downloaded fresh file: http://sothailand.com/centerimg/SAC_test_Lag123.csv
+2026-06-30 13:52:30,021 | INFO | Finished zone: SAC
+2026-06-30 13:52:30,032 | INFO | ────────────────────────────────────────
+2026-06-30 13:52:30,032 | INFO | Auto-adaptation layer
+2026-06-30 13:52:30,046 | CRITICAL | MAPE ALERT | MAC | Ensemble MAPE=3.97% > 3.0% | BIAS=295.3 MW
+2026-06-30 13:52:30,050 | CRITICAL | MAPE ALERT | MAC | Ensemble MAPE=4.08% > 3.0% | BIAS=301.8 MW
+2026-06-30 13:52:30,050 | CRITICAL | MAPE ALERT | NEC | Ensemble MAPE=3.67% > 3.0% | BIAS=111.1 MW
+2026-06-30 13:52:30,051 | CRITICAL | MAPE ALERT | NEC | Ensemble MAPE=3.66% > 3.0% | BIAS=110.9 MW
+2026-06-30 13:52:30,051 | CRITICAL | MAPE ALERTS: 4 ภาคที่ต้องการตรวจสอบ
+2026-06-30 13:52:30,089 | INFO | Bias correction | CAC | UNDER-predict 1240.5 MW avg จาก 844 rows → +1240.5 MW จะถูกบวกใน future predictions
+2026-06-30 13:52:30,090 | INFO | Bias correction | MAC | UNDER-predict 1598.6 MW avg จาก 844 rows → +1598.6 MW จะถูกบวกใน future predictions
+2026-06-30 13:52:30,090 | INFO | Bias correction | NAC | UNDER-predict 321.7 MW avg จาก 844 rows → +321.7 MW จะถูกบวกใน future predictions
+2026-06-30 13:52:30,091 | INFO | Bias correction | NEC | UNDER-predict 322.3 MW avg จาก 844 rows → +322.3 MW จะถูกบวกใน future predictions
+2026-06-30 13:52:30,091 | INFO | Bias correction | SAC | UNDER-predict 216.9 MW avg จาก 844 rows → +216.9 MW จะถูกบวกใน future predictions
+2026-06-30 13:52:30,107 | INFO | Bias corrections applied: {'CAC': '+1240.5 MW', 'MAC': '+1598.6 MW', 'NAC': '+321.7 MW', 'NEC': '+322.3 MW', 'SAC': '+216.9 MW'}
+2026-06-30 13:52:30,128 | INFO | Optimal weights updated | XGB=20.1% LGBM=79.9% LSTM=0.0% → MAPE 11.985% (4220 scored rows)
+2026-06-30 13:52:30,129 | INFO | Optimal weights updated for next run: XGB=20.1% LGBM=79.9% LSTM=0.0%
+2026-06-30 13:52:30,129 | INFO | ────────────────────────────────────────
+2026-06-30 13:52:30,318 | INFO | CSV exports complete
+2026-06-30 13:52:30,361 | INFO | Decision dashboard built (5 zones)
+2026-06-30 13:52:31,119 | INFO | Excel report → /Users/noeiibibi/Documents/multi-region-load-forecasting/Egat_forecasting/output/load_forecast_report.xlsx
+2026-06-30 13:52:31,119 | INFO | Pipeline finished successfully (run_timestamp=20260630_134942)
+2026-06-30 13:52:31,119 | INFO | ════════════════════════════════════════════════════════════
